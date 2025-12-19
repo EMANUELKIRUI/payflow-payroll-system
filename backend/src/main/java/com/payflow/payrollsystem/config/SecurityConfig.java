@@ -11,6 +11,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Configuration
@@ -36,8 +38,20 @@ public class SecurityConfig {
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling().authenticationEntryPoint((req, res, authException) -> {
+                    res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                });
+
+        // Allow frames for H2 console
+        http.headers().frameOptions().sameOrigin();
+
         return http.build();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean

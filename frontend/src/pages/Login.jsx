@@ -23,7 +23,7 @@ export default function Login() {
         localStorage.setItem('token', data.token);
         // Decode token to get role
         const payload = JSON.parse(atob(data.token.split('.')[1]));
-        if (payload.role === 'superadmin') {
+        if (payload.role && payload.role.toLowerCase() === 'superadmin') {
           navigate('/superadmin');
         } else {
           navigate('/dashboard');
