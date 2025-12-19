@@ -26,6 +26,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=payflow
       - SPRING_DATASOURCE_PASSWORD=payflow
       - JWT_SECRET=${JWT_SECRET}
+      - JWT_SECRET_BASE64=${JWT_SECRET_BASE64}
       - SPRING_PROFILES_ACTIVE=prod
     depends_on:
       db:

@@ -214,14 +214,22 @@ Backend container
 A production-ready Docker setup is included:
 
 - `backend/Dockerfile.prod` — multi-stage Dockerfile that builds the backend with Maven (JDK 17) and runs with a slim JRE.
-- `docker-compose.prod.yml` — starts a `postgres` database and the backend service. JWT secret should be provided via the `JWT_SECRET` environment variable.
+- `docker-compose.prod.yml` — starts a `postgres` database and the backend service. Prefer providing a **Base64-encoded** JWT secret via the `JWT_SECRET_BASE64` environment variable (fallback: `JWT_SECRET` is supported).
 - Docker images are built and pushed to GitHub Container Registry by CI. Backend image tag: `ghcr.io/<owner>/payflow-backend:<sha>` and `ghcr.io/<owner>/payflow-backend:latest`.
 
 - `backend/src/main/resources/application-prod.properties` — production Spring profile configuration (Postgres, Flyway enabled, `ddl-auto=validate`).
 
 To run in production mode locally:
 
-1. Set a secure JWT secret: `export JWT_SECRET=$(openssl rand -hex 32)`
+1. Set a secure **Base64-encoded** JWT secret (recommended for HS512):
+   ```bash
+   export JWT_SECRET_BASE64=$(openssl rand -base64 64)
+   ```
+   Alternatively you can set a hex secret (not preferred):
+   ```bash
+   export JWT_SECRET=$(openssl rand -hex 64)
+   ```
+   Note: HS512 requires a sufficiently large key (recommend at least **512 bits / 64 bytes**). Using a Base64-encoded 64-byte secret preserves binary key material and is preferred.
 2. Start services: `docker compose -f docker-compose.prod.yml up --build -d`
 3. Monitor logs: `docker compose -f docker-compose.prod.yml logs -f backend`
 
