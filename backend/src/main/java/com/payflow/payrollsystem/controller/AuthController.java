@@ -18,8 +18,13 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
-        String token = authService.authenticate(credentials.get("email"), credentials.get("password"));
-        return ResponseEntity.ok(Map.of("token", token));
+        try {
+            String token = authService.authenticate(credentials.get("email"), credentials.get("password"));
+            return ResponseEntity.ok(Map.of("token", token));
+        } catch (Exception e) {
+            System.out.println("AuthController: login failed for '" + credentials.get("email") + "' - " + e.getClass().getSimpleName() + ": " + e.getMessage());
+            return ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials"));
+        }
     }
 
     @PostMapping("/register")
