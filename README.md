@@ -225,10 +225,6 @@ To run in production mode locally:
    ```bash
    export JWT_SECRET_BASE64=$(openssl rand -base64 64)
    ```
-   Alternatively you can set a hex secret (not preferred):
-   ```bash
-   export JWT_SECRET=$(openssl rand -hex 64)
-   ```
    Note: HS512 requires a sufficiently large key (recommend at least **512 bits / 64 bytes**). Using a Base64-encoded 64-byte secret preserves binary key material and is preferred.
 2. Start services: `docker compose -f docker-compose.prod.yml up --build -d`
 3. Monitor logs: `docker compose -f docker-compose.prod.yml logs -f backend`
