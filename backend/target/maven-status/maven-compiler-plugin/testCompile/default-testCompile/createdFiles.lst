@@ -3,5 +3,6 @@ com/payflow/payrollsystem/migration/V3HashPlainPasswordsTest.class
 com/payflow/payrollsystem/migration/V3HashPlainPasswordsTest$1.class
 com/payflow/payrollsystem/service/TokenRoundTripTest.class
 com/payflow/payrollsystem/SchemaValidationTest.class
+com/payflow/payrollsystem/service/TokenRoundTripBase64Test.class
 com/payflow/payrollsystem/controller/AuthControllerTest.class
 com/payflow/payrollsystem/service/AuthServiceSmokeTest.class

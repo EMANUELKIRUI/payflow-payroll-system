@@ -20,8 +20,13 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Set JWT secret for tests
+        run: echo "JWT_SECRET=$(openssl rand -hex 64)" >> $GITHUB_ENV
+
       - name: Build & run tests
         working-directory: backend
+        env:
+          JWT_SECRET: ${{ env.JWT_SECRET }}
         run: mvn -B test
 
   docker-build-push:

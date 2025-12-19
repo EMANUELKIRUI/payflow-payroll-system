@@ -22,6 +22,9 @@ public class AuthService {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
+    @Value("${jwt.secret-base64:}")
+    private String jwtSecretBase64;
+
     @Value("${jwt.expiration}")
     private long jwtExpiration;
 
@@ -77,6 +80,13 @@ public class AuthService {
         return "Registered";
     }
 
+    private byte[] getSigningKeyBytes() {
+        if (jwtSecretBase64 != null && !jwtSecretBase64.isBlank()) {
+            return java.util.Base64.getDecoder().decode(jwtSecretBase64);
+        }
+        return jwtSecret != null ? jwtSecret.getBytes() : new byte[0];
+    }
+
     private String generateToken(User user) {
         return Jwts.builder()
                 .setSubject(user.getEmail())
@@ -84,7 +94,7 @@ public class AuthService {
                 .claim("companyId", user.getCompany() != null ? user.getCompany().getId() : null)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
-                .signWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()), SignatureAlgorithm.HS512)
+                .signWith(Keys.hmacShaKeyFor(getSigningKeyBytes()), SignatureAlgorithm.HS512)
                 .compact();
     }
 }
