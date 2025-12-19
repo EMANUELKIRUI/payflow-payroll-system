@@ -1,0 +1,18 @@
+# Created at 2025-12-19T22:37:53.602
+TestSet has not finished before stream error has appeared >> initializing exit by non-null configuration: null
+java.io.EOFException
+	at java.base/java.io.DataInputStream.readInt(DataInputStream.java:386)
+	at org.apache.maven.surefire.booter.MasterProcessCommand.decode(MasterProcessCommand.java:115)
+	at org.apache.maven.surefire.booter.CommandReader$CommandRunnable.run(CommandReader.java:391)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+
+
+# Created at 2025-12-19T22:37:53.745
+Unexpected IOException with stream: 2025-12-19T22:37:53.742Z  WARN 80 --- [           main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 0c35e837-cf77-43f2-b5d1-1b997fad2655
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+
+

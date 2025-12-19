@@ -9,6 +9,7 @@ com/payflow/payrollsystem/controller/PayrollController.class
 com/payflow/payrollsystem/service/PayrollService.class
 com/payflow/payrollsystem/repository/EmployeeRepository.class
 com/payflow/payrollsystem/model/User.class
+db/migration/V3__HashPlainPasswords.class
 com/payflow/payrollsystem/repository/CompanyRepository.class
 com/payflow/payrollsystem/controller/SuperAdminController.class
 com/payflow/payrollsystem/model/Tax.class

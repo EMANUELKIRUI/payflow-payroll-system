@@ -22,6 +22,7 @@ public class AuthController {
             String token = authService.authenticate(credentials.get("email"), credentials.get("password"));
             return ResponseEntity.ok(Map.of("token", token));
         } catch (Exception e) {
+            System.out.println("AuthController: login failed for '" + credentials.get("email") + "' - " + e.getClass().getSimpleName() + ": " + e.getMessage());
             return ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials"));
         }
     }

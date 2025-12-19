@@ -1,0 +1,5 @@
+/workspace/backend/src/test/java/com/payflow/payrollsystem/controller/CheckUserPasswordTest.java
+/workspace/backend/src/test/java/com/payflow/payrollsystem/controller/AuthControllerTest.java
+/workspace/backend/src/test/java/com/payflow/payrollsystem/SchemaValidationTest.java
+/workspace/backend/src/test/java/com/payflow/payrollsystem/migration/V3HashPlainPasswordsTest.java
+/workspace/backend/src/test/java/com/payflow/payrollsystem/service/AuthServiceSmokeTest.java
