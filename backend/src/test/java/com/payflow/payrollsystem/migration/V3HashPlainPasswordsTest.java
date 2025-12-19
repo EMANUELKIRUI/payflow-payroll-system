@@ -27,6 +27,11 @@ public class V3HashPlainPasswordsTest {
                 public Connection getConnection() {
                     return conn;
                 }
+
+                @Override
+                public org.flywaydb.core.api.configuration.Configuration getConfiguration() {
+                    return null; // not needed for this test
+                }
             });
 
             try (PreparedStatement ps = conn.prepareStatement("SELECT password FROM users WHERE id = 1")) {
