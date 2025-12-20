@@ -27,6 +27,7 @@ public class User {
     private List<Employee> employees;
 
     @OneToMany(mappedBy = "user")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<AuditLog> auditLogs;
 
     // Getters and Setters
@@ -34,7 +35,7 @@ public class User {
     public void setId(Long id) { this.id = id; }
 
     public Company getCompany() { return company; }
-    public void setCompany(Company company) { this.company = company; }
+    public void setCompany(Company company) { this.company = company; } 
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }

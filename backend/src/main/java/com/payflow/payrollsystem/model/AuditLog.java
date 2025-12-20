@@ -15,6 +15,17 @@ public class AuditLog {
     private User user;
 
     private String action;
+
+    // New fields to record what was affected
+    @Column(name = "entity_type")
+    private String entityType;
+
+    @Column(name = "entity_id")
+    private Long entityId;
+
+    @Column(columnDefinition = "TEXT")
+    private String metadata;
+
     private LocalDateTime timestamp;
 
     // Getters and Setters
@@ -27,6 +38,15 @@ public class AuditLog {
     public String getAction() { return action; }
     public void setAction(String action) { this.action = action; }
 
+    public String getEntityType() { return entityType; }
+    public void setEntityType(String entityType) { this.entityType = entityType; }
+
+    public Long getEntityId() { return entityId; }
+    public void setEntityId(Long entityId) { this.entityId = entityId; }
+
+    public String getMetadata() { return metadata; }
+    public void setMetadata(String metadata) { this.metadata = metadata; }
+
     public LocalDateTime getTimestamp() { return timestamp; }
     public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
-}
+} 

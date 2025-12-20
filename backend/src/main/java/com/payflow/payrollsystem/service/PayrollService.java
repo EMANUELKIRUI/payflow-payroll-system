@@ -17,21 +17,42 @@ public class PayrollService {
     private final TaxRepository taxRepository;
     private final PayslipRepository payslipRepository;
     private final PayrollRunRepository payrollRunRepository;
+    private final UserRepository userRepository;
 
     public PayrollService(EmployeeRepository employeeRepository, SalaryRepository salaryRepository,
                           TaxRepository taxRepository, PayslipRepository payslipRepository,
-                          AuditLogRepository auditLogRepository, TaxCalculationService taxCalculationService,
+                          AuditLogRepository auditLogRepository, UserRepository userRepository, TaxCalculationService taxCalculationService,
                           DeductionService deductionService, PensionService pensionService) {
         this.employeeRepository = employeeRepository;
         this.salaryRepository = salaryRepository;
         this.taxRepository = taxRepository;
         this.payslipRepository = payslipRepository;
         this.auditLogRepository = auditLogRepository;
+        this.userRepository = userRepository;
         this.taxCalculationService = taxCalculationService;
         this.deductionService = deductionService;
         this.pensionService = pensionService;
     }
 
+    private void logAudit(String action) {
+        logAudit(action, null, null, null);
+    }
+
+    private void logAudit(String action, String entityType, Long entityId, String metadata) {
+        String email = SecurityContextHolder.getContext().getAuthentication() != null
+                ? SecurityContextHolder.getContext().getAuthentication().getName()
+                : null;
+        AuditLog log = new AuditLog();
+        log.setAction(action);
+        log.setTimestamp(LocalDateTime.now());
+        if (entityType != null) log.setEntityType(entityType);
+        if (entityId != null) log.setEntityId(entityId);
+        if (metadata != null) log.setMetadata(metadata);
+        if (email != null) {
+            userRepository.findByEmail(email).ifPresent(log::setUser);
+        }
+        auditLogRepository.save(log);
+    }
     public List<Employee> getEmployeesByCompany(Long companyId) {
         return employeeRepository.findByCompanyId(companyId);
     }

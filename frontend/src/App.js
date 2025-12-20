@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import Payroll from './pages/Payroll';
 import CompanyRegistration from './pages/CompanyRegistration';
 import SuperAdminDashboard from './pages/SuperAdminDashboard';
+import AuditLogs from './pages/AuditLogs';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/payroll" element={<Payroll />} />
           <Route path="/register" element={<CompanyRegistration />} />
           <Route path="/superadmin" element={<SuperAdminDashboard />} />
+          <Route path="/audits" element={<AuditLogs />} />
         </Routes>
       </div>
     </Router>
