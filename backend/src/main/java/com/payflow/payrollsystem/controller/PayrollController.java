@@ -1,10 +1,7 @@
 package com.payflow.payrollsystem.controller;
 
-import com.payflow.payrollsystem.model.Employee;
-import com.payflow.payrollsystem.model.Payslip;
-import com.payflow.payrollsystem.model.Salary;
-import com.payflow.payrollsystem.service.PayrollService;
-import com.payflow.payrollsystem.service.PayslipPdfService;
+import com.payflow.payrollsystem.model.PayrollRun;
+import com.payflow.payrollsystem.repository.PayrollRunRepository;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

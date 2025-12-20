@@ -1,53 +1,101 @@
 # Payflow Payroll System
 
-## Overview
-Payflow is a comprehensive payroll management system designed for multi-company environments. It provides secure, efficient payroll processing with role-based access control, audit logging, and PDF payslip generation.
+A full-stack payroll management system with React frontend and Spring Boot backend.
 
-## Features
+## Tech Stack
 
-### 1. Authentication & Security
-✅ JWT-Based Authentication
+- **Frontend:** React 18, React Router
+- **Backend:** Spring Boot 2.7, JPA, H2/PostgreSQL
+- **Database:** H2 (dev), PostgreSQL (prod)
+- **Security:** JWT, Spring Security
+- **Deployment:** Docker, Docker Compose
 
-Secure login using JSON Web Tokens (JWT)
+## Quick Start
 
-Stateless authentication (no server sessions)
+### Prerequisites
 
-Token validation on every protected API request
+- Docker and Docker Compose
+- Node.js 16+ (for local frontend development)
+- Java 17 (for local backend development)
 
-✅ Role-Based Access Control (RBAC)
+### Production Deployment
 
-Supported roles:
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd payflow-payroll-system
+   ```
 
-SUPERADMIN – system-wide control
+2. **Build and run with Docker Compose:**
+   ```bash
+   docker-compose up --build
+   ```
 
-HR – employee & payroll management
+3. **Access the application:**
+   - Frontend: http://localhost
+   - Backend API: http://localhost:8080
 
-FINANCE – payroll & tax operations
+### Local Development
 
-EMPLOYEE – view own payslips
+1. **Start the backend:**
+   ```bash
+   cd backend
+   export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+   ./mvnw spring-boot:run
+   ```
 
-Access is enforced using:
+2. **Start the frontend:**
+   ```bash
+   cd frontend
+   npm install
+   npm start
+   ```
 
-@PreAuthorize("hasAnyRole('HR','FINANCE')")
+3. **Access:**
+   - Frontend: http://payflowpayroll.com:3000 (add to /etc/hosts: 127.0.0.1 payflowpayroll.com)
+   - Backend: http://localhost:8080
 
-### 2. Multi-Company (Multi-Tenant) Support
+## Default Users
 
-Each company is onboarded independently
+- **Super Admin:** super@test.com / password
+- **Employee:** admin@test.com / password
 
-Employees, payrolls, and users belong to a specific company
+## API Documentation
 
-Data isolation between companies
+- Swagger UI: http://localhost:8080/swagger-ui/index.html
 
-SUPERADMIN can manage all companies
+## Environment Variables
 
-### 3. User Management
-Features:
+### Backend
 
-User registration and login
+- `SPRING_PROFILES_ACTIVE`: `prod` for production
+- `JWT_SECRET`: Custom JWT secret (default provided)
+- `DB_PASSWORD`: Database password (default: prodpassword)
+- `PORT`: Server port (default: 8080)
 
-Users linked to roles and companies
+### Frontend
 
-Account enable/disable
+- `PORT`: Frontend port (default: 3000)
+- `HOST`: Host domain (default: payflowpayroll.com)
+
+## Database
+
+- **Development:** H2 in-memory/file database
+- **Production:** PostgreSQL via Docker Compose
+
+## Security
+
+- JWT tokens with 24-hour expiration
+- CORS configured for custom domain
+- Password encryption with BCrypt
+- Role-based authorization
+
+## Deployment Notes
+
+- Frontend is served via Nginx in production
+- Backend runs on port 8080
+- Database migrations handled by Flyway
+- Static files optimized and gzipped
 
 Password encryption using BCrypt
 

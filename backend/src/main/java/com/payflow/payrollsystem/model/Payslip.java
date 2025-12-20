@@ -1,6 +1,6 @@
 package com.payflow.payrollsystem.model;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -15,6 +15,10 @@ public class Payslip {
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
+    @ManyToOne
+    @JoinColumn(name = "payroll_run_id")
+    private PayrollRun payrollRun;
+
     @Column(name = "net_pay", precision = 12, scale = 2)
     private BigDecimal netPay;
 
@@ -27,6 +31,9 @@ public class Payslip {
 
     public Employee getEmployee() { return employee; }
     public void setEmployee(Employee employee) { this.employee = employee; }
+
+    public PayrollRun getPayrollRun() { return payrollRun; }
+    public void setPayrollRun(PayrollRun payrollRun) { this.payrollRun = payrollRun; }
 
     public BigDecimal getNetPay() { return netPay; }
     public void setNetPay(BigDecimal netPay) { this.netPay = netPay; }

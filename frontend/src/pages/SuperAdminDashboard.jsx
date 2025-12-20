@@ -23,7 +23,7 @@ export default function SuperAdminDashboard() {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ padding: '20px', backgroundColor: 'DarkGrey' }}>
       <h1>SuperAdmin Dashboard</h1>
       <p>Control everything in the system</p>
       <Link to="/payroll">View All Payroll</Link>

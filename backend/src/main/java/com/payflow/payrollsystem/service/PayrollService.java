@@ -16,16 +16,20 @@ public class PayrollService {
     private final SalaryRepository salaryRepository;
     private final TaxRepository taxRepository;
     private final PayslipRepository payslipRepository;
-    private final AuditLogRepository auditLogRepository;
+    private final PayrollRunRepository payrollRunRepository;
 
     public PayrollService(EmployeeRepository employeeRepository, SalaryRepository salaryRepository,
                           TaxRepository taxRepository, PayslipRepository payslipRepository,
-                          AuditLogRepository auditLogRepository) {
+                          AuditLogRepository auditLogRepository, TaxCalculationService taxCalculationService,
+                          DeductionService deductionService, PensionService pensionService) {
         this.employeeRepository = employeeRepository;
         this.salaryRepository = salaryRepository;
         this.taxRepository = taxRepository;
         this.payslipRepository = payslipRepository;
         this.auditLogRepository = auditLogRepository;
+        this.taxCalculationService = taxCalculationService;
+        this.deductionService = deductionService;
+        this.pensionService = pensionService;
     }
 
     public List<Employee> getEmployeesByCompany(Long companyId) {
@@ -47,8 +51,8 @@ public class PayrollService {
     }
 
     public Tax calculateTax(Salary salary) {
-        BigDecimal gross = salary.getBasicSalary().add(salary.getAllowances() != null ? salary.getAllowances() : BigDecimal.ZERO);
-        BigDecimal taxAmount = calculateProgressiveTax(gross);
+        BigDecimal taxableIncome = salary.getTaxableIncome();
+        BigDecimal taxAmount = taxCalculationService.calculatePAYE(taxableIncome);
         Tax tax = new Tax();
         tax.setSalary(salary);
         tax.setTaxAmount(taxAmount);
@@ -57,42 +61,8 @@ public class PayrollService {
     }
 
     private BigDecimal calculateProgressiveTax(BigDecimal gross) {
-        // Progressive tax calculation (annual brackets, simplified example)
-        // Assumes monthly gross is provided; for accuracy, annualize if needed
-        BigDecimal tax = BigDecimal.ZERO;
-        BigDecimal remaining = gross;
-
-        // Example progressive tax brackets (annual, simplified)
-        // 0 - 10,000: 0%
-        if (remaining.compareTo(BigDecimal.valueOf(10000)) > 0) {
-            remaining = remaining.subtract(BigDecimal.valueOf(10000));
-        } else {
-            return tax;
-        }
-
-        // 10,000 - 20,000: 10%
-        BigDecimal bracket2 = BigDecimal.valueOf(10000);
-        if (remaining.compareTo(bracket2) > 0) {
-            tax = tax.add(bracket2.multiply(BigDecimal.valueOf(0.10)));
-            remaining = remaining.subtract(bracket2);
-        } else {
-            tax = tax.add(remaining.multiply(BigDecimal.valueOf(0.10)));
-            return tax;
-        }
-
-        // 20,000 - 50,000: 20%
-        BigDecimal bracket3 = BigDecimal.valueOf(30000);
-        if (remaining.compareTo(bracket3) > 0) {
-            tax = tax.add(bracket3.multiply(BigDecimal.valueOf(0.20)));
-            remaining = remaining.subtract(bracket3);
-        } else {
-            tax = tax.add(remaining.multiply(BigDecimal.valueOf(0.20)));
-            return tax;
-        }
-
-        // Above 50,000: 30%
-        tax = tax.add(remaining.multiply(BigDecimal.valueOf(0.30)));
-        return tax;
+        // This is now handled by TaxCalculationService
+        return taxCalculationService.calculatePAYE(gross);
     }
 
     private void logAudit(String action) {
@@ -108,17 +78,39 @@ public class PayrollService {
         Employee employee = employeeRepository.findById(employeeId).orElseThrow();
         // Assume latest salary
         Salary salary = employee.getSalaries().get(employee.getSalaries().size() - 1);
-        BigDecimal gross = salary.getBasicSalary().add(salary.getAllowances() != null ? salary.getAllowances() : BigDecimal.ZERO);
+        BigDecimal basic = salary.getBasicSalary();
+        BigDecimal allowances = salary.getAllowances() != null ? salary.getAllowances() : BigDecimal.ZERO;
+        BigDecimal gross = basic.add(allowances);
+        salary.setGrossSalary(gross);
 
-        // Calculate tax
-        Tax tax = calculateTax(salary);
+        // Calculate deductions
+        BigDecimal nssf = pensionService.calculateNSSF(basic);
+        BigDecimal nhif = deductionService.calculateNHIF(gross);
+        BigDecimal pension = nssf; // Assuming NSSF is the pension
 
-        // Calculate other deductions
-        BigDecimal socialSecurity = gross.multiply(BigDecimal.valueOf(0.062)); // 6.2%
-        BigDecimal medicare = gross.multiply(BigDecimal.valueOf(0.0145)); // 1.45%
-        BigDecimal totalDeductions = tax.getTaxAmount().add(socialSecurity).add(medicare);
+        // Taxable income = gross - nssf (as per Kenya rules, NSSF reduces taxable income)
+        BigDecimal taxableIncome = gross.subtract(nssf);
+        BigDecimal paye = taxCalculationService.calculatePAYE(taxableIncome);
 
+        BigDecimal totalDeductions = paye.add(nssf).add(nhif);
         BigDecimal netPay = gross.subtract(totalDeductions);
+
+        // Update salary with calculations
+        salary.setNssfDeduction(nssf);
+        salary.setNhifDeduction(nhif);
+        salary.setPensionContribution(pension);
+        salary.setTaxableIncome(taxableIncome);
+        salary.setPayeTax(paye);
+        salary.setTotalDeductions(totalDeductions);
+        salary.setNetPay(netPay);
+        salaryRepository.save(salary);
+
+        // Create tax record
+        Tax tax = new Tax();
+        tax.setSalary(salary);
+        tax.setTaxAmount(paye);
+        tax.setCreatedAt(LocalDateTime.now());
+        taxRepository.save(tax);
 
         Payslip payslip = new Payslip();
         payslip.setEmployee(employee);

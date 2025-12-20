@@ -27,7 +27,7 @@ export default function Payroll() {
   }, []);
 
   const fetchEmployees = async (userRole, compId, token) => {
-    const url = userRole === 'superadmin' ? 'http://localhost:8081/api/payroll/employees' : `http://localhost:8081/api/payroll/employees/${compId}`;
+    const url = userRole === 'SUPERADMIN' ? 'http://localhost:8081/api/payroll/employees' : `http://localhost:8081/api/payroll/employees/${compId}`;
     try {
       const response = await fetch(url, {
         headers: { 'Authorization': `Bearer ${token}` },
